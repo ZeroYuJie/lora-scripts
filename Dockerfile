@@ -8,7 +8,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &
 RUN mkdir /app
 
 WORKDIR /app
-RUN git clone --recurse-submodules https://github.com/Akegarasu/lora-scripts
+RUN git clone --recurse-submodules https://github.com/ZeroYuJie/lora-scripts
 
 WORKDIR /app/lora-scripts
 RUN pip install xformers==0.0.21 --no-deps && pip install -r requirements.txt
