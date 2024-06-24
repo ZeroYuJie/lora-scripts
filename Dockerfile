@@ -11,7 +11,7 @@ WORKDIR /app
 RUN git clone --recurse-submodules https://github.com/ZeroYuJie/lora-scripts
 
 WORKDIR /app/lora-scripts
-RUN pip install xformers==0.0.21 --no-deps && pip install -r requirements.txt
+RUN pip install xformers==0.0.21 --no-deps && pip install --use-deprecated=legacy-resolver -r requirements.txt
 
 WORKDIR /app/lora-scripts/sd-scripts
 RUN pip install -r requirements.txt
