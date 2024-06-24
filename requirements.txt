@@ -25,7 +25,7 @@ pandas
 scipy
 requests
 pillow
-numpy
+numpy==1.26.4
 gradio==3.44.2
 fastapi==0.95.1
 uvicorn==0.22.0
@@ -35,3 +35,12 @@ httpx==0.24.1
 open-clip-torch==2.20.0
 lycoris-lora==2.1.0.post3
 dadaptation==3.1
+
+# for WD14 captioning (tensorflow)
+tensorflow==2.10.1
+# for WD14 captioning (onnx)
+onnx==1.15.0
+--extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/
+onnxruntime-gpu==1.17.1
+onnxruntime==1.17.1
+protobuf==3.20.3
