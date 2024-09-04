@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/pytorch:23.07-py3
+FROM nvcr.io/nvidia/pytorch:24.07-py3
 
 EXPOSE 28000
 
@@ -14,10 +14,11 @@ RUN git clone --recurse-submodules https://github.com/ZeroYuJie/lora-scripts
 
 WORKDIR /app/lora-scripts
 RUN pip uninstall transformer-engine -y
-RUN pip install xformers==0.0.26.post1 --no-deps
+RUN pip install xformers==0.0.27.post2 --no-deps
 RUN pip install --use-deprecated=legacy-resolver -r requirements.txt
 
-WORKDIR /app/lora-scripts/sd-scripts
+
+WORKDIR /app/lora-scripts/scripts
 RUN pip install -r requirements.txt
 
 WORKDIR /app/lora-scripts

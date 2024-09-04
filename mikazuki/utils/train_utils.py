@@ -16,7 +16,8 @@ class ModelType(Enum):
     SD2 = 2
     SDXL = 3
     SD3 = 4
-    LoRA = 5
+    FLUX = 5
+    LoRA = 10
 
 
 def is_promopt_like(s):
@@ -30,18 +31,17 @@ def validate_model(model_name: str, training_type: str = "sd-lora"):
     if os.path.exists(model_name):
         try:
             with open(model_name, "rb") as f:
-                content = f.read(1024 * 500)
+                content = f.read(1024 * 1000)
                 model_type = match_model_type(content)
 
                 if model_type == ModelType.UNKNOWN:
                     log.error(f"Can't match model type from {model_name}")
 
-                if model_type not in [ModelType.SD15,  ModelType.SD2, ModelType.SDXL]:
-                    return False, "Pretrained model is not a Stable Diffusion checkpoint / 校验失败：底模不是 Stable Diffusion 模型"
-                elif model_type == ModelType.SD3:
-                    return False, "Pretrained model not supported yet / 校验失败：SD3 模型暂不支持"
-                elif model_type == ModelType.SDXL and training_type == "sd-lora":
-                    return False, "Pretrained model is SDXL, but you are training with LoRA / 校验失败：你选择的是 LoRA 训练，但预训练模型是 SDXL。请前往专家模式选择正确的模型种类。"
+                if model_type not in [ModelType.SD15, ModelType.SD2, ModelType.SD3, ModelType.SDXL, ModelType.FLUX]:
+                    return False, "Pretrained model is not a Stable Diffusion or Flux checkpoint / 校验失败：底模不是 Stable Diffusion 或 Flux 模型"
+
+                if model_type == ModelType.SDXL and training_type == "sd-lora":
+                    return False, "Pretrained model is SDXL, but you are training with SD1.5 LoRA / 校验失败：你选择的是 SD1.5 LoRA 训练，但预训练模型是 SDXL。请前往专家模式选择正确的模型种类。"
 
         except Exception as e:
             log.warn(f"model file {model_name} can't open: {e}")
@@ -59,6 +59,9 @@ def validate_model(model_name: str, training_type: str = "sd-lora"):
 
 
 def match_model_type(sig_content: bytes):
+    if b"model.diffusion_model.double_blocks" in sig_content or b"double_blocks.0.img_attn.norm.query_norm.scale" in sig_content:
+        return ModelType.FLUX
+
     if b"model.diffusion_model.x_embedder.proj.weight" in sig_content:
         return ModelType.SD3
 
@@ -151,3 +154,10 @@ def get_total_images(path, recursive=True):
         image_files += glob.glob(path + '/*.jpeg')
         image_files += glob.glob(path + '/*.png')
     return image_files
+
+
+def fix_config_types(config: dict):
+    keep_float_params = ["guidance_scale", "sigmoid_scale", "discrete_flow_shift"]
+    for k in keep_float_params:
+        if k in config:
+            config[k] = float(config[k])
