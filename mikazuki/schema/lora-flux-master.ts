@@ -2,10 +2,10 @@ Schema.intersect([
     Schema.intersect([
         Schema.object({
             model_train_type: Schema.string().default("flux-lora").disabled().description("训练种类"),
-            pretrained_model_name_or_path: Schema.string().role('filepicker').default("./sd-models/model.safetensors").description("Flux 模型路径"),
-            ae: Schema.string().role('filepicker').description("AE 模型文件路径"),
-            clip_l: Schema.string().role('filepicker').description("clip_l 模型文件路径"),
-            t5xxl: Schema.string().role('filepicker').description("t5xxl 模型文件路径"),
+            pretrained_model_name_or_path: Schema.string().role('filepicker', {type: "model-file"}).default("./sd-models/model.safetensors").description("Flux 模型路径"),
+            ae: Schema.string().role('filepicker', {type: "model-file"}).description("AE 模型文件路径"),
+            clip_l: Schema.string().role('filepicker', {type: "model-file"}).description("clip_l 模型文件路径"),
+            t5xxl: Schema.string().role('filepicker', {type: "model-file"}).description("t5xxl 模型文件路径"),
             resume: Schema.string().role('filepicker').description("从某个 `save_state` 保存的中断状态继续训练，填写文件路径"),
         }).description("训练用模型"),
     ]),
@@ -17,11 +17,12 @@ Schema.intersect([
         discrete_flow_shift: Schema.number().step(0.001).default(1.0).description("Euler 调度器离散流位移"),
         loss_type: Schema.union(["l1", "l2", "huber", "smooth_l1"]).default("l2").description("损失函数类型"),
         guidance_scale: Schema.number().step(0.01).default(1.0).description("CFG 引导缩放"),
+        t5xxl_max_token_length: Schema.number().step(1).description("T5XXL 最大 token 长度（不填写使用自动）"),
     }).description("Flux 专用参数"),
 
     Schema.object({
-        train_data_dir: Schema.string().role('filepicker', { type: "folder" }).default("./train/aki").description("训练数据集路径"),
-        reg_data_dir: Schema.string().role('filepicker', { type: "folder" }).description("正则化数据集路径。默认留空，不使用正则化图像"),
+        train_data_dir: Schema.string().role('filepicker', { type: "folder", internal: "train-dir" }).default("./train/aki").description("训练数据集路径"),
+        reg_data_dir: Schema.string().role('filepicker', { type: "folder", internal: "train-dir" }).description("正则化数据集路径。默认留空，不使用正则化图像"),
         prior_loss_weight: Schema.number().step(0.1).default(1.0).description("正则化 - 先验损失权重"),
         resolution: Schema.string().default("768,768").description("训练图片分辨率，宽x高。支持非正方形，但必须是 64 倍数。"),
         enable_bucket: Schema.boolean().default(true).description("启用 arb 桶以允许非固定宽高比的图片"),
@@ -78,11 +79,13 @@ Schema.intersect([
                 "AdamW",
                 "AdamW8bit",
                 "PagedAdamW8bit",
+                "AdamWScheduleFree",
                 "Lion",
                 "Lion8bit",
                 "PagedLion8bit",
                 "SGDNesterov",
                 "SGDNesterov8bit",
+                "SGDScheduleFree",
                 "DAdaptation",
                 "DAdaptAdam",
                 "DAdaptAdaGrad",
@@ -111,7 +114,7 @@ Schema.intersect([
 
     Schema.intersect([
         Schema.object({
-            network_module: Schema.union(["networks.lora_flux"]).default("networks.lora_flux").description("训练网络模块"),
+            network_module: Schema.union(["networks.lora_flux", "networks.oft_flux"]).default("networks.lora_flux").description("训练网络模块"),
             network_weights: Schema.string().role('filepicker').description("从已有的 LoRA 模型上继续训练，填写路径"),
             network_dim: Schema.number().min(1).default(2).description("网络维度，常用 4~128，不是越大越好, 低dim可以降低显存占用"),
             network_alpha: Schema.number().min(1).default(16).description("常用值：等于 network_dim 或 network_dim*1/2 或 1。使用较小的 alpha 需要提升学习率"),
@@ -170,7 +173,7 @@ Schema.intersect([
         weighted_captions: Schema.boolean().description("使用带权重的 token，不推荐与 shuffle_caption 一同开启"),
         keep_tokens: Schema.number().min(0).max(255).step(1).default(0).description("在随机打乱 tokens 时，保留前 N 个不变"),
         keep_tokens_separator: Schema.string().description("保留 tokens 时使用的分隔符"),
-        max_token_length: Schema.number().default(255).description("最大 token 长度"),
+        // max_token_length: Schema.number().default(255).description("最大 token 长度"),
         caption_dropout_rate: Schema.number().min(0).step(0.01).description("丢弃全部标签的概率，对一个图片概率不使用 caption 或 class token"),
         caption_dropout_every_n_epochs: Schema.number().min(0).max(100).step(1).description("每 N 个 epoch 丢弃全部标签"),
         caption_tag_dropout_rate: Schema.number().min(0).step(0.01).description("按逗号分隔的标签来随机丢弃 tag 的概率"),
