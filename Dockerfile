@@ -4,8 +4,6 @@ EXPOSE 28000
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && apt update && apt install python3-tk -y
-## 设置 PIP_CONFIG_FILE 环境变量为 /dev/null
-ENV PIP_CONFIG_FILE=/dev/null
 
 RUN mkdir /app
 
