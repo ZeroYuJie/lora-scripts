@@ -23,5 +23,7 @@ RUN pip install -r requirements.txt
 WORKDIR /app/lora-scripts
 RUN pip uninstall transformer-engine -y
 RUN pip uninstall opencv -y
-
+RUN pip uninstall opencv-python -y
+RUN rm -rf /usr/local/lib/python3.10/dist-packages/cv2/
+RUN pip install opencv-python-headless
 CMD ["python", "gui.py", "--listen"]
