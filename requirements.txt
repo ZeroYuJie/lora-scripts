@@ -34,6 +34,7 @@ fastapi==0.95.1
 uvicorn==0.22.0
 wandb==0.16.2
 httpx==0.24.1
+pydantic==1.10.12
 # extra
 open-clip-torch==2.20.0
 lycoris-lora==2.1.0.post3
