@@ -26,5 +26,5 @@ RUN pip uninstall opencv -y
 RUN rm -rf /usr/local/lib/python3.10/dist-packages/cv2/
 RUN apt-get update && apt-get install libgl1 -y
 
-RUN pip install opencv-python==4.8.1.78
+RUN pip install opencv-python-headless==4.8.1.78
 CMD ["python", "gui.py", "--listen"]
