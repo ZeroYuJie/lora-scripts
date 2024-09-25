@@ -22,5 +22,6 @@ RUN pip install -r requirements.txt
 
 WORKDIR /app/lora-scripts
 RUN pip uninstall transformer-engine -y
+RUN pip uninstall opencv -y
 
 CMD ["python", "gui.py", "--listen"]
