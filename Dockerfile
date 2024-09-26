@@ -28,5 +28,6 @@ RUN apt-get update && apt-get install libgl1 -y
 RUN pip install opencv-python-headless==4.8.1.78
 RUN pip uninstall flash-attn -y
 RUN pip install flash-attn --no-build-isolation
+RUN pip uninstall apex -y
 
 CMD ["python", "gui.py", "--listen"]
