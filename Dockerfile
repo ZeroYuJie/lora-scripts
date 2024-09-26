@@ -13,12 +13,11 @@ RUN git clone --recurse-submodules https://github.com/ZeroYuJie/lora-scripts
 WORKDIR /app/lora-scripts
 RUN pip install torch==2.4.1+cu124 torchvision==0.19.1+cu124 --extra-index-url https://download.pytorch.org/whl/cu124
 RUN pip install xformers==0.0.28.post1 --no-deps --extra-index-url https://download.pytorch.org/whl/cu124
-RUN pip install --use-deprecated=legacy-resolver -r requirements.txt
-RUN pip install flash-attn --no-build-isolation
+RUN pip install --upgrade -r requirements.txt
 
 
 WORKDIR /app/lora-scripts/scripts/dev
-RUN pip install -r requirements.txt
+RUN pip install --upgrade -r requirements.txt
 
 WORKDIR /app/lora-scripts
 RUN pip uninstall transformer-engine -y
@@ -27,4 +26,7 @@ RUN rm -rf /usr/local/lib/python3.10/dist-packages/cv2/
 RUN apt-get update && apt-get install libgl1 -y
 
 RUN pip install opencv-python-headless==4.8.1.78
+RUN pip uninstall flash-attn -y
+RUN pip install flash-attn --no-build-isolation
+
 CMD ["python", "gui.py", "--listen"]
