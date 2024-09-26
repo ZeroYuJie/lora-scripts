@@ -13,11 +13,11 @@ RUN git clone --recurse-submodules https://github.com/ZeroYuJie/lora-scripts
 WORKDIR /app/lora-scripts
 RUN pip install torch==2.4.1+cu124 torchvision==0.19.1+cu124 --extra-index-url https://download.pytorch.org/whl/cu124
 RUN pip install xformers==0.0.28.post1 --no-deps --extra-index-url https://download.pytorch.org/whl/cu124
-RUN pip install --upgrade -r requirements.txt
+RUN pip install --upgrade --use-deprecated=legacy-resolver -r requirements.txt
 
 
 WORKDIR /app/lora-scripts/scripts/dev
-RUN pip install --upgrade -r requirements.txt
+RUN pip install --upgrade --use-deprecated=legacy-resolver -r requirements.txt
 
 WORKDIR /app/lora-scripts
 RUN pip uninstall transformer-engine -y
